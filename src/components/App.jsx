@@ -21,6 +21,7 @@ export class App extends Component {
     isLoading: false,
     isMore: false,
     isModal: false,
+    modalImage: {}
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -74,14 +75,21 @@ export class App extends Component {
     });
   };
 
+  showModalImage=image=>{
+  this.setState({
+    modalImage: image,
+    isModal: true
+  })
+  }
+
   render() {
     return (
       <div className={css.app}>
         <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery images={this.state.images} />
+        <ImageGallery images={this.state.images} showModalImage={this.showModalImage} />
         {this.state.isLoading && <Loader />}
         {this.state.isMore && <Button onLoadMore={this.onLoadMore} />}
-        {this.state.isModal && <Modal/>}
+        {this.state.isModal && <Modal largeImage={this.state.modalImage}/>}
       </div>
     );
   }
