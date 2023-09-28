@@ -15,29 +15,57 @@ export class App extends Component {
 
   state = {
     images: [],
+    query: "",
+    error: false,
+    isLoading: false,
+    isMore: false,
   }
 
-  async componentDidMount(){
-    const response = await axios.get(BASE_URL, {
-      params: 
-      {key: API_KEY,
-      image_type: 'photo',
-      orientation: 'horizontal',
-      safesearch: true,
+  async componentDidUpdate(prevProps, prevState){
+    const {query } = this.state;
+
+    if ( prevState.query !== query) {
+      try {
+        const response = await axios.get(BASE_URL, {
+          params: 
+          {key: API_KEY,
+          image_type: 'photo',
+          orientation: 'horizontal',
+          safesearch: true,
+          q: this.state.query
+        }
+        });
+        this.setState({ 
+          images: response.data.hits,
+          });
+
+}
+
+       catch (error) {
+        this.setState({ error: true });
+      } finally {
+        this.setState({ isLoading: false });
+      }
     }
-    });
-    this.setState({ images: response.data.hits });
-
   }
+
+ onSubmit = (e) => {
+ e.preventDefault()
+    this.setState({
+     query: e.target.elements.query.value.trim(),
+     isMore: true 
+    });
+  };
+
 
  render (){
   return (
     <div className={css.app}>
     
-    <Searchbar/>
+    <Searchbar onSubmit={this.onSubmit} />
     <ImageGallery images={this.state.images}/>
     {/* <Loader/> */}
-    <Button/>
+    <Button isMore={this.state.isMore}/>
     </div>
   );
  }
