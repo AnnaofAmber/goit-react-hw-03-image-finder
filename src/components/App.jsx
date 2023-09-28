@@ -16,15 +16,16 @@ export class App extends Component {
   state = {
     images: [],
     query: "",
+    page: 1,
     error: false,
     isLoading: false,
     isMore: false,
   }
 
   async componentDidUpdate(prevProps, prevState){
-    const {query } = this.state;
+    const {page, query } = this.state;
 
-    if ( prevState.query !== query) {
+    if ( prevState.query !== query || prevState.page !== page) {
       try {
         const response = await axios.get(BASE_URL, {
           params: 
@@ -32,11 +33,16 @@ export class App extends Component {
           image_type: 'photo',
           orientation: 'horizontal',
           safesearch: true,
-          q: this.state.query
+          q: this.state.query,
+          page: this.state.page
         }
         });
-        this.setState({ 
-          images: response.data.hits,
+        const data = response.data.hits
+        this.setState(prevState=>{ 
+         return {
+          images: [...prevState.images, ...data],
+          isMore: true,
+          isLoading:true, }
           });
 
 }
@@ -53,10 +59,15 @@ export class App extends Component {
  e.preventDefault()
     this.setState({
      query: e.target.elements.query.value.trim(),
-     isMore: true 
+     
     });
   };
-
+ 
+  onLoadMore = ()=>{
+this.setState(prevState => {
+ return {page: prevState.page +1 }
+})
+  }
 
  render (){
   return (
@@ -65,7 +76,7 @@ export class App extends Component {
     <Searchbar onSubmit={this.onSubmit} />
     <ImageGallery images={this.state.images}/>
     {/* <Loader/> */}
-    <Button isMore={this.state.isMore}/>
+    <Button onLoadMore={this.onLoadMore} isMore={this.state.isMore}/>
     </div>
   );
  }
