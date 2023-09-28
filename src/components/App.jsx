@@ -21,13 +21,16 @@ export class App extends Component {
     isLoading: false,
     isMore: false,
     isModal: false,
-    modalImage: {}
+    modalImage: {},
   };
 
   async componentDidUpdate(prevProps, prevState) {
     const { page, query } = this.state;
-    if(this.state.query===""){
-      return Notiflix.Notify.failure("Sorry, the field is empty. Please try again.");}
+    if (this.state.query === '') {
+      return Notiflix.Notify.failure(
+        'Sorry, the field is empty. Please try again.'
+      );
+    }
 
     if (prevState.query !== query || prevState.page !== page) {
       try {
@@ -49,9 +52,15 @@ export class App extends Component {
             isLoading: true,
           };
         });
-        Notiflix.Notify.success(`"Hooray! We found ${response.data.totalHits} images."`)
+        if (page === 1) {
+          Notiflix.Notify.success(
+            `"Hooray! We found ${response.data.totalHits} images."`
+          );
+        }
       } catch (error) {
-        Notiflix.Notify.failure('Oops! Something went wrong! Try reloading the page!')
+        Notiflix.Notify.failure(
+          'Oops! Something went wrong! Try reloading the page!'
+        );
       } finally {
         this.setState({ isLoading: false });
       }
@@ -65,9 +74,7 @@ export class App extends Component {
       page: 1,
       images: [],
     });
-
-    }
-  
+  };
 
   onLoadMore = () => {
     this.setState(prevState => {
@@ -75,21 +82,35 @@ export class App extends Component {
     });
   };
 
-  showModalImage=image=>{
-  this.setState({
-    modalImage: image,
-    isModal: true
-  })
-  }
+  showModalImage = image => {
+    this.setState({
+      modalImage: image,
+      isModal: true,
+    });
+  };
+
+  closeModal = e => {
+    if (e.target.nodeName === 'DIV' || e.code === 'Escape') {
+      this.setState({
+        modalImage: {},
+        isModal: false,
+      });
+    }
+  };
 
   render() {
     return (
       <div className={css.app}>
         <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery images={this.state.images} showModalImage={this.showModalImage} />
+        <ImageGallery
+          images={this.state.images}
+          showModalImage={this.showModalImage}
+        />
         {this.state.isLoading && <Loader />}
         {this.state.isMore && <Button onLoadMore={this.onLoadMore} />}
-        {this.state.isModal && <Modal largeImage={this.state.modalImage}/>}
+        {this.state.isModal && (
+          <Modal largeImage={this.state.modalImage} onClose={this.closeModal} />
+        )}
       </div>
     );
   }
