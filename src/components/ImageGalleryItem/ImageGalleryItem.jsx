@@ -1,7 +1,9 @@
+import css from "./ImageGalleryItem.module.css"
+
 export const ImageGalleryItem = ({imageUrl})=>{
     return(
-        <li>
-            <img src={imageUrl} alt="" />
+        <li className={css.imageGalleryItem}>
+            <img className={css.galleryImage} src={imageUrl} alt="" />
         </li>
     )
 }

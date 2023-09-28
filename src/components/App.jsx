@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import css from "./App.module.css"
 
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
@@ -18,7 +18,6 @@ export class App extends Component {
   }
 
   async componentDidMount(){
-    console.log('sdf');
     const response = await axios.get(BASE_URL, {
       params: 
       {key: API_KEY,
@@ -28,21 +27,12 @@ export class App extends Component {
     }
     });
     this.setState({ images: response.data.hits });
-    console.log(response.data);
+
   }
 
  render (){
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
+    <div className={css.app}>
     
     <Searchbar/>
     <ImageGallery images={this.state.images}/>
