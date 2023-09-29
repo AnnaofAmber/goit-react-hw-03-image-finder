@@ -11,7 +11,7 @@ import Notiflix from 'notiflix';
 import axios from 'axios';
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '38875476-56470004daa575dac0a90faa7';
-// axios.defaults.baseURL = "https://pixabay.com/api/?q=cat&page=1&key=38875476-56470004daa575dac0a90faa7&image_type=photo&orientation=horizontal&per_page=12"
+
 
 export class App extends Component {
   state = {
@@ -22,6 +22,7 @@ export class App extends Component {
     isMore: false,
     isModal: false,
     modalImage: {},
+    error: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -34,6 +35,7 @@ export class App extends Component {
 
     if (prevState.query !== query || prevState.page !== page) {
       try {
+        this.setState({isLoading: true,})
         const response = await axios.get(BASE_URL, {
           params: {
             key: API_KEY,
@@ -49,15 +51,22 @@ export class App extends Component {
           return {
             images: [...prevState.images, ...data],
             isMore: true,
-            isLoading: true,
           };
         });
-        if (page === 1) {
+        if(data.length === 0){
+          Notiflix.Notify.failure(
+            'Oops! There are no images that match your request!'
+            
+          );
+          this.setState({isMore:false})
+        }
+        if (page === 1 && data.length !== 0) {
           Notiflix.Notify.success(
             `"Hooray! We found ${response.data.totalHits} images."`
           );
         }
       } catch (error) {
+        this.setState({error:true})
         Notiflix.Notify.failure(
           'Oops! Something went wrong! Try reloading the page!'
         );
