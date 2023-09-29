@@ -12,7 +12,6 @@ import axios from 'axios';
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '38875476-56470004daa575dac0a90faa7';
 
-
 export class App extends Component {
   state = {
     images: [],
@@ -27,6 +26,7 @@ export class App extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { page, query } = this.state;
+    const perPage = 20;
     if (this.state.query === '') {
       return Notiflix.Notify.failure(
         'Sorry, the field is empty. Please try again.'
@@ -35,7 +35,7 @@ export class App extends Component {
 
     if (prevState.query !== query || prevState.page !== page) {
       try {
-        this.setState({isLoading: true,})
+        this.setState({ isLoading: true });
         const response = await axios.get(BASE_URL, {
           params: {
             key: API_KEY,
@@ -44,6 +44,7 @@ export class App extends Component {
             safesearch: true,
             q: this.state.query,
             page: this.state.page,
+            per_page: perPage,
           },
         });
         const data = response.data.hits;
@@ -53,12 +54,21 @@ export class App extends Component {
             isMore: true,
           };
         });
-        if(data.length === 0){
+
+        if (response.data.totalHits < perPage * page && page !== 1) {
+          this.setState({ isMore: false });
+          Notiflix.Notify.failure(
+            "We're sorry, but you've reached the end of search results."
+          );
+        }
+        if (data.length < perPage && page === 1) {
+          this.setState({ isMore: false });
+        }
+        if (data.length === 0 && page === 1) {
           Notiflix.Notify.failure(
             'Oops! There are no images that match your request!'
-            
           );
-          this.setState({isMore:false})
+          this.setState({ isMore: false });
         }
         if (page === 1 && data.length !== 0) {
           Notiflix.Notify.success(
@@ -66,7 +76,7 @@ export class App extends Component {
           );
         }
       } catch (error) {
-        this.setState({error:true})
+        this.setState({ error: true });
         Notiflix.Notify.failure(
           'Oops! Something went wrong! Try reloading the page!'
         );
