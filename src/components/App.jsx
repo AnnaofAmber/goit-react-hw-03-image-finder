@@ -108,15 +108,13 @@ export class App extends Component {
       isModal: true,
     });
   };
-
-  closeModal = e => {
-    if (e.target.nodeName === 'DIV' || e.code === 'Escape') {
+    closeModal = () => {
       this.setState({
         modalImage: {},
         isModal: false,
       });
-    }
-  };
+
+  }
 
   render() {
     return (

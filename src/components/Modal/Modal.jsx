@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 export class Modal extends Component {
   componentDidMount = () => {
-    const { onClose } = this.props;
+    const { onClose} = this.props;
     window.addEventListener('keydown', onClose);
   };
 
@@ -11,11 +11,18 @@ export class Modal extends Component {
     const { onClose } = this.props;
     window.removeEventListener('keydown', onClose);
   };
+
+  handleClick = e =>{
+    const { onClose} = this.props;
+    if (e.target.nodeName === 'DIV' || e.code === 'Escape') {
+    onClose()
+    }
+  }
   
   render() {
-    const { largeImage, onClose } = this.props;
+    const { largeImage} = this.props;
     return (
-      <div className={css.overlay} onClick={onClose}>
+      <div className={css.overlay} onClick={this.handleClick}>
         <div className={css.modal}>
           <img className={css.modalImage} src={largeImage} alt="" />
         </div>
