@@ -86,10 +86,9 @@ export class App extends Component {
     }
   }
 
-  onSubmit = e => {
-    e.preventDefault();
+  onSubmit = query => {
     this.setState({
-      query: e.target.elements.query.value.trim(),
+      query: query,
       page: 1,
       images: [],
     });
@@ -108,7 +107,7 @@ export class App extends Component {
       isModal: true,
     });
   };
-    closeModal = () => {
+    closeModal = e => {
       this.setState({
         modalImage: {},
         isModal: false,
