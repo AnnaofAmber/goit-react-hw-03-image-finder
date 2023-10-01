@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import css from './App.module.css';
 
+import {searchForImage} from "../api/gallery-api"
+
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
@@ -8,9 +10,7 @@ import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
 
 import Notiflix from 'notiflix';
-import axios from 'axios';
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '38875476-56470004daa575dac0a90faa7';
+
 
 export class App extends Component {
   state = {
@@ -36,26 +36,16 @@ export class App extends Component {
     if (prevState.query !== query || prevState.page !== page) {
       try {
         this.setState({ isLoading: true });
-        const response = await axios.get(BASE_URL, {
-          params: {
-            key: API_KEY,
-            image_type: 'photo',
-            orientation: 'horizontal',
-            safesearch: true,
-            q: this.state.query,
-            page: this.state.page,
-            per_page: perPage,
-          },
-        });
-        const data = response.data.hits;
+        
+        const result = await searchForImage(query, page, perPage);
+        const data = result.hits
         this.setState(prevState => {
           return {
             images: [...prevState.images, ...data],
             isMore: true,
           };
         });
-
-        if (response.data.totalHits < perPage * page && page !== 1) {
+        if (result.totalHits < perPage * page && page !== 1) {
           this.setState({ isMore: false });
           Notiflix.Notify.failure(
             "We're sorry, but you've reached the end of search results."
@@ -72,7 +62,7 @@ export class App extends Component {
         }
         if (page === 1 && data.length !== 0) {
           Notiflix.Notify.success(
-            `"Hooray! We found ${response.data.totalHits} images."`
+            `"Hooray! We found ${result.totalHits} images."`
           );
         }
       } catch (error) {
