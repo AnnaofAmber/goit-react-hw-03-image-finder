@@ -26,7 +26,7 @@ export class App extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { page, query } = this.state;
-    const perPage = 20;
+    const perPage = 12;
     if (this.state.query === '') {
       return Notiflix.Notify.failure(
         'Sorry, the field is empty. Please try again.'
@@ -97,7 +97,8 @@ export class App extends Component {
 
   onLoadMore = () => {
     this.setState(prevState => {
-      return { page: prevState.page + 1 };
+      return { page: prevState.page + 1,
+      isMore: false };
     });
   };
 
