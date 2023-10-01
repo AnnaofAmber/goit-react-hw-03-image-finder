@@ -121,10 +121,12 @@ export class App extends Component {
     return (
       <div className={css.app}>
         <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery
-          images={this.state.images}
-          showModalImage={this.showModalImage}
-        />
+        {this.state.images.length !==0  && (
+          <ImageGallery
+            images={this.state.images}
+            showModalImage={this.showModalImage}
+          />
+        )}
         {this.state.isLoading && <Loader />}
         {this.state.isMore && <Button onLoadMore={this.onLoadMore} />}
         {this.state.isModal && (
